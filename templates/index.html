@@ -11,7 +11,7 @@
     <ul>
         {% for instance in instances %}
             <li>{{ instance.ip }}:{{ instance.port }} -
-                Статус: {{ 'Доступен' if instance.available else 'Недоступен' }}</li>
+                Статус: {{ 'Доступен' if instance.status else 'Недоступен' }}</li>
         {% endfor %}
     </ul>
 
