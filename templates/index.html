@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Балансировщик нагрузки</h1>
-    <h2>Текущие инстансы</h2>
+    <h2>Список текущих инстансов и их состояние</h2>
     <ul>
         {% for instance in instances %}
             <li>{{ instance.ip }}:{{ instance.port }} -
@@ -15,7 +15,7 @@
         {% endfor %}
     </ul>
 
-    <h2>Добавить инстанс</h2>
+    <h2>Добавить новый инстанс</h2>
     <form id="addInstanceForm">
         <input type="text" placeholder="IP" name="ip" required>
         <input type="number" placeholder="Порт" name="port" required>
