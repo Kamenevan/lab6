@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Balancer Dashboard</title>
+</head>
+<body>
+    <h1>Load Balancer Dashboard</h1>
+    <form action="/add_instance" method="post">
+        <label>IP:</label><input type="text" name="ip">
+        <label>Port:</label><input type="text" name="port">
+        <button type="submit">Add Instance</button>
+    </form>
+    <ul>
+        {% for instance in instances %}
+            <li>{{ instance.ip }}:{{ instance.port }} - {{ 'Active' if instance.active else 'Inactive' }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
