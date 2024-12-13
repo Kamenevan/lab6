@@ -1,21 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Load Balancer Dashboard</title>
+    <title>Балансировщик нагрузки</title>
 </head>
 <body>
-    <h1>Load Balancer Dashboard</h1>
-    <form action="/add_instance" method="post">
-        <label>IP:</label><input type="text" name="ip">
-        <label>Port:</label><input type="text" name="port">
-        <button type="submit">Add Instance</button>
-    </form>
+    <h1>Балансировщик нагрузки</h1>
+    <h2>Текущие инстансы</h2>
     <ul>
         {% for instance in instances %}
-            <li>{{ instance.ip }}:{{ instance.port }} - {{ 'Active' if instance.active else 'Inactive' }}</li>
+            <li>{{ instance.ip }}:{{ instance.port }} -
+                Статус: {{ 'Доступен' if instance.available else 'Недоступен' }}</li>
         {% endfor %}
     </ul>
+
+    <h2>Добавить инстанс</h2>
+    <form id="addInstanceForm">
+        <input type="text" placeholder="IP" name="ip" required>
+        <input type="number" placeholder="Порт" name="port" required>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <script>
+    document.getElementById('addInstanceForm').onsubmit = function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const jsonData = Object.fromEntries(formData);
+        fetch('/add_instance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        }).then(response => {
+            if (response.ok) {
+                location.reload();  // перезагрузить страницу для обновления списка
+            }
+        });
+    };
+    </script>
 </body>
 </html>
