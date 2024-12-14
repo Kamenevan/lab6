@@ -8,10 +8,13 @@
 <body>
     <h1>Балансировщик нагрузки</h1>
     <h2>Список текущих инстансов и их состояние</h2>
-    <ul>
+    <ul id="instances-list">
         {% for instance in instances %}
-            <li>{{ instance.ip }}:{{ instance.port }} -
-                Статус: {{ 'Доступен' if instance.status else 'Недоступен' }}</li>
+            <li>
+                {{ instance.ip }}:{{ instance.port }} -
+                Статус: {{ 'Доступен' if instance.available else 'Недоступен' }}
+                <button class="delete-instance-btn" data-ip="{{ instance.ip }}" data-port="{{ instance.port }}">Удалить</button>
+            </li>
         {% endfor %}
     </ul>
 
@@ -23,22 +26,58 @@
     </form>
 
     <script>
-    document.getElementById('addInstanceForm').onsubmit = function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const jsonData = Object.fromEntries(formData);
-        fetch('/add_instance', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(jsonData)
-        }).then(response => {
-            if (response.ok) {
-                location.reload();  // перезагрузить страницу для обновления списка
-            }
+        // Обработчик события для кнопок удаления
+        document.querySelectorAll('.delete-instance-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const ip = this.getAttribute('data-ip');
+                const port = this.getAttribute('data-port');
+
+                // Отправка запроса на сервер для удаления инстанса
+                fetch('/remove_instance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ip, port })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Instance removed') {
+                        alert('Инстанс удалён');
+                        location.reload(); // Перезагружаем страницу
+                    } else {
+                        alert('Ошибка при удалении инстанса');
+                    }
+                })
+                .catch(error => {
+                    alert('Ошибка при подключении к серверу');
+                });
+            });
         });
-    };
+
+        // Обработчик формы добавления инстанса
+        document.getElementById('addInstanceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const ip = this.ip.value;
+            const port = this.port.value;
+
+            fetch('/add_instance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ip, port })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Инстанс добавлен');
+                location.reload(); // Перезагружаем страницу
+            })
+            .catch(error => {
+                alert('Ошибка при добавлении инстанса');
+            });
+        });
     </script>
 </body>
 </html>
+
